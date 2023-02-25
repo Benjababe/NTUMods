@@ -20,6 +20,7 @@ from users.urls import urlpatterns as users_urlpatterns
 from course_module.views import ModuleSearchViewSet
 from timeslot.views import VenueTimeSlotViewSet
 from venue.views import VenueSearchViewSet
+import frontend.views as frontend_views
 
 admin.site.index_title = 'NTU MODULE ADMIN'
 admin.site.site_url = 'www.google.com'
@@ -27,6 +28,7 @@ admin.site.site_header = 'NTUMOD'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', frontend_views.index),
     path('', include('course_module.urls')),
     path('', include('venue.urls')),
     re_path('modulesearch/', ModuleSearchViewSet.as_view()),
@@ -35,3 +37,4 @@ urlpatterns = [
 ]
 
 urlpatterns += users_urlpatterns
+urlpatterns += [re_path(r'^.*', frontend_views.index)]

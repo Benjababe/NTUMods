@@ -1,6 +1,6 @@
-const venueUrl = "http://localhost:8000/venue/";
-const timeslotUrl = "http://localhost:8000/timeslot/";
-const searchUrl = "http://localhost:8000/venuesearch/"
+const venueUrl = "/venue/";
+const timeslotUrl = "/timeslot/";
+const searchUrl = "/venuesearch/"
 
 const getAll = async () => {
     const venues = await fetch(venueUrl);

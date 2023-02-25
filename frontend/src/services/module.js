@@ -1,5 +1,5 @@
-const baseUrl = "http://localhost:8000/module/"
-const searchUrl = "http://localhost:8000/modulesearch/"
+const baseUrl = "/module/"
+const searchUrl = "/modulesearch/"
 
 const getAll = async () => {
     const modules = await fetch(baseUrl);
