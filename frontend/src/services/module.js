@@ -12,7 +12,7 @@ const getUrl = async (url) => {
 }
 
 const searchModule = async (searchVal) => {
-    const modules = await fetch(`${searchUrl}?query=${searchVal}`);
+    const modules = await fetch(`${searchUrl}?query=${encodeURIComponent(searchVal)}`);
     return modules.json();
 }
 

@@ -32,7 +32,7 @@ const Modules = () => {
         })
 
     return (
-        <>
+        <div className="module-block">
             <div>
                 <input className="txt-search" type="search" placeholder="Module Code/Name" onChange={(e) => searchModule(e.target.value)} />
             </div>
@@ -45,7 +45,7 @@ const Modules = () => {
                 {(modules && modules.previous) ? <input type="button" value="Previous" onClick={() => getUrl(modules.previous)} /> : ""}
                 {(modules && modules.next) ? <input type="button" value="Next" onClick={() => getUrl(modules.next)} /> : ""}
             </div>
-        </>
+        </div>
     );
 }
 

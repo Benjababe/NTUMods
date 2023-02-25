@@ -9,17 +9,27 @@ const TabBlock = () => {
     const [block, setBlock] = useState(0);
 
     const setActive = () => {
-        if (block === TAB_MODULES)
+        if (block === TAB_MODULES) {
             return (<Modules />)
-        else if (block === TAB_VENUES)
+        }
+        else if (block === TAB_VENUES) {
             return (<Venues />);
+        }
     }
 
     return (
         <div className="main-block">
             <div className="tab-link-container">
-                <button className="tab-link" onClick={() => setBlock(TAB_MODULES)}>Modules</button>
-                <button className="tab-link" onClick={() => setBlock(TAB_VENUES)}>Venues</button>
+                <button
+                    className={`tab-link ${(block === TAB_MODULES) ? "tab-link-active" : ""}`}
+                    onClick={() => setBlock(TAB_MODULES)}>
+                    Modules
+                </button>
+                <button
+                    className={`tab-link ${(block === TAB_VENUES) ? "tab-link-active" : ""}`}
+                    onClick={() => setBlock(TAB_VENUES)}>
+                    Venues
+                </button>
             </div>
             <div className="tab-block">
                 {setActive()}

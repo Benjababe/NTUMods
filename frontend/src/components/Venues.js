@@ -39,21 +39,25 @@ const Venues = () => {
         });
 
     return (
-        <>
-            <div>
-                <input className="txt-search" type="search" placeholder="Venue Name" onChange={(e) => searchVenue(e.target.value)} />
+        <div className="venue-block">
+            <div className="venue-sel-div">
+                <div>
+                    <input className="txt-search" type="search" placeholder="Venue Name" onChange={(e) => searchVenue(e.target.value)} />
+                </div>
+                <div className="venue-results">
+                    <ul className="venue-list">
+                        {venuesList}
+                    </ul>
+                </div>
+                <div className="pager venue-pager">
+                    {(venues && venues.previous) ? <input type="button" value="Previous" onClick={() => getUrl(venues.previous)} /> : ""}
+                    {(venues && venues.next) ? <input type="button" value="Next" onClick={() => getUrl(venues.next)} /> : ""}
+                </div>
             </div>
-            <div className="venue-results">
-                <ul className="venue-list">
-                    {venuesList}
-                </ul>
+            <div className="timeslot-div">
+                {(timeslots.length) ? <VenueTimetable timeslots={timeslots} /> : ""}
             </div>
-            <div className="pager venue-pager">
-                {(venues && venues.previous) ? <input type="button" value="Previous" onClick={() => getUrl(venues.previous)} /> : ""}
-                {(venues && venues.next) ? <input type="button" value="Next" onClick={() => getUrl(venues.next)} /> : ""}
-            </div>
-            <VenueTimetable timeslots={timeslots} />
-        </>
+        </div>
     );
 }
 

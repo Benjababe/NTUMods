@@ -18,7 +18,7 @@ const getTimeslots = async (venueId) => {
 }
 
 const searchVenue = async (searchVal) => {
-    const venues = await fetch(`${searchUrl}?name=${searchVal}`);
+    const venues = await fetch(`${searchUrl}?name=${encodeURIComponent(searchVal)}`);
     return venues.json();
 }
 

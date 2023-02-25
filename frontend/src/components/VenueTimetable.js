@@ -1,8 +1,6 @@
 import Timetable from 'react-timetable-events';
 
 const VenueTimetable = ({ timeslots }) => {
-    console.log(timeslots);
-
     const dayMap = {
         "MON": "monday",
         "TUE": "tuesday",
@@ -26,7 +24,7 @@ const VenueTimetable = ({ timeslots }) => {
         if (day !== undefined) {
             events[day].push({
                 id: timeslot.id,
-                name: `${timeslot.group} ${timeslot.index}`,
+                name: `${timeslot.module_code} ${timeslot.type} ${timeslot.group} ${timeslot.index}`,
                 startTime: new Date("1970-01-01T" + timeslot.time_start),
                 endTime: new Date("1970-01-01T" + timeslot.time_end)
             });
@@ -35,7 +33,7 @@ const VenueTimetable = ({ timeslots }) => {
 
     return (<Timetable
         events={events}
-        style={{ minHeight: "48rem", minWidth: "36rem" }}
+        style={{ minHeight: "48rem", minWidth: "36rem", fontSize: "smaller" }}
     />);
 }
 
