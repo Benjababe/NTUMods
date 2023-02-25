@@ -19,20 +19,22 @@ const Modules = () => {
     }
 
     const searchModule = async (val) => {
-        const modules = await moduleService.searchModule(val);
+        const modules = (val === "")
+            ? await moduleService.getAll()
+            : await moduleService.searchModule(val);
         setModules(modules);
     };
 
-    const modulesList = (modules == null)
+    const modulesList = (modules === null)
         ? []
         : modules["results"].map((module) => {
             return <ModuleItem key={module.id} module={module} />;
-        });
+        })
 
     return (
         <>
             <div>
-                <input type="search" placeholder="Module Code/Name" onChange={(e) => searchModule(e.target.value)} />
+                <input className="txt-search" type="search" placeholder="Module Code/Name" onChange={(e) => searchModule(e.target.value)} />
             </div>
             <div className="module-results">
                 <ul className="module-list">

@@ -12,9 +12,9 @@ from .serializers import ModuleSerializer
 
 # Create your views here.
 class StandardResultSetPagination(PageNumberPagination):
-    page_size = 10  # Default number of records per page when not specified
+    page_size = 6  # Default number of records per page when not specified
     page_size_query_param = 'page_size'
-    max_page_size = 10  # Max Limit
+    max_page_size = 6  # Max Limit
 
 
 class ModuleViewSet(viewsets.ModelViewSet):

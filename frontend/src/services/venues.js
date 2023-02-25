@@ -1,5 +1,6 @@
 const venueUrl = "http://localhost:8000/venue/";
-const timeslotUrl = "http://localhost:8000/timeslot/"
+const timeslotUrl = "http://localhost:8000/timeslot/";
+const searchUrl = "http://localhost:8000/venuesearch/"
 
 const getAll = async () => {
     const venues = await fetch(venueUrl);
@@ -16,10 +17,16 @@ const getTimeslots = async (venueId) => {
     return timeslots.json();
 }
 
+const searchVenue = async (searchVal) => {
+    const venues = await fetch(`${searchUrl}?name=${searchVal}`);
+    return venues.json();
+}
+
 const exportObj = {
     getAll,
     getUrl,
     getTimeslots,
+    searchVenue,
 };
 
 export default exportObj;

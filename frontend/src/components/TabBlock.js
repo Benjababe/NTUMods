@@ -16,13 +16,15 @@ const TabBlock = () => {
     }
 
     return (
-        <>
-            <div>
+        <div className="main-block">
+            <div className="tab-link-container">
                 <button className="tab-link" onClick={() => setBlock(TAB_MODULES)}>Modules</button>
                 <button className="tab-link" onClick={() => setBlock(TAB_VENUES)}>Venues</button>
             </div>
-            {setActive()}
-        </>
+            <div className="tab-block">
+                {setActive()}
+            </div>
+        </div>
     );
 };
 

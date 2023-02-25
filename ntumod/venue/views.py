@@ -10,9 +10,9 @@ from .serializers import VenueSerializer
 
 # Create your views here.
 class StandardResultSetPagination(PageNumberPagination):
-    page_size = 15  # Default number of records per page when not specified
+    page_size = 16  # Default number of records per page when not specified
     page_size_query_param = 'page_size'
-    max_page_size = 15  # Max Limit
+    max_page_size = 16  # Max Limit
 
 
 class VenueViewSet(viewsets.ModelViewSet):

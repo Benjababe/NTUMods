@@ -4,7 +4,7 @@ const VenueItem = ({ venue, loadTimeslots }) => {
             <button
                 className="btn-venue"
                 onClick={() => loadTimeslots(venue.id)}>
-                {venue.name}
+                {(venue.name.trim() === "") ? "-" : venue.name}
             </button>
         </div>
     );

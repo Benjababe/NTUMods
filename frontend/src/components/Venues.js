@@ -25,6 +25,13 @@ const Venues = () => {
         setVenues(venues);
     }
 
+    const searchVenue = async (val) => {
+        const venues = (val === "")
+            ? await venueService.getAll()
+            : await venueService.searchVenue(val);
+        setVenues(venues);
+    }
+
     const venuesList = (venues == null)
         ? []
         : venues["results"].map((venue) => {
@@ -34,7 +41,7 @@ const Venues = () => {
     return (
         <>
             <div>
-                <input type="search" placeholder="Venue Name" />
+                <input className="txt-search" type="search" placeholder="Venue Name" onChange={(e) => searchVenue(e.target.value)} />
             </div>
             <div className="venue-results">
                 <ul className="venue-list">

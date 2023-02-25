@@ -35,7 +35,7 @@ const VenueTimetable = ({ timeslots }) => {
 
     return (<Timetable
         events={events}
-        style={{ height: '500px' }}
+        style={{ minHeight: "48rem", minWidth: "36rem" }}
     />);
 }
 
