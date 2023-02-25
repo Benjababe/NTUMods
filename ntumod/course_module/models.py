@@ -4,7 +4,7 @@ from django.db import models
 # Create your models here.
 
 class Course(models.Model):
-    code = models.CharField(max_length=10, null=True, blank=True, unique=True)
+    code = models.CharField(max_length=10, null=True, blank=True)
     sub_code = models.CharField(max_length=10, null=True, blank=True)
     year = models.CharField(max_length=4, null=True, blank=True)
     name = models.CharField(max_length=100, null=True, blank=True)
