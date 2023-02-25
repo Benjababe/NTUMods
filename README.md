@@ -6,7 +6,7 @@
 
 # Pre-requisites
 
-Ensure you have a `.env` file in the `backend` folder with the following properties set
+Ensure you have a `.env` file in the same directory as `settings.py` with the following properties set
 
 ```
 DEBUG=TRUE
@@ -15,7 +15,7 @@ DEBUG=TRUE
 SECRET_KEY=
 
 # Name of the postgres database
-DBNAME=ntumod
+DBNAME=ntumods
 
 # Username to access the postgres database
 DBUSERNAME=postgres

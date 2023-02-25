@@ -1,13 +1,7 @@
-let baseUrl = "";
-let searchUrl = "";
+import constants from "./constants";
 
-if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-    baseUrl = "http://localhost:8000/module/";
-    searchUrl = "http://localhost:8000/moduleSearch/";
-} else {
-    baseUrl = "/module/";
-    searchUrl = "/moduleSearch/";
-}
+const baseUrl = `${constants.baseUrl}/module/`;
+const searchUrl = `${constants.baseUrl}/modulesearch/`;
 
 const getAll = async () => {
     const modules = await fetch(baseUrl);

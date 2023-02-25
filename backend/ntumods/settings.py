@@ -58,11 +58,13 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000',  # for localhost (REACT Default)
     'http://localhost:8080',  # for localhost (Developlemt)
+    'https://ntumods.benjababe.duckdns.org'
 )
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',  # for localhost (REACT Default)
     'http://localhost:8080',  # for localhost (Developlemt)
+    'https://ntumods.benjababe.duckdns.org'
 ]
 
 # We want to send an email to our console (as demo)
