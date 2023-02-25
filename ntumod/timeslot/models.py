@@ -5,6 +5,7 @@ from venue.models import Venue
 
 
 class TimeSlot(models.Model):
+    index = models.CharField(max_length=10, null=True, blank=True)
     type = models.CharField(max_length=10, null=True, blank=True)
     group = models.CharField(max_length=10, null=True, blank=True)
     day = models.CharField(max_length=4, null=True, blank=True)
