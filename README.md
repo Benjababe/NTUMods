@@ -1,27 +1,25 @@
 # Pages Scraped
 
 - [Course Information Selection](https://wis.ntu.edu.sg/webexe/owa/aus_subj_cont.main)
-- [Course Information Display](https://wish.wis.ntu.edu.sg/webexe/owa/AUS_SCHEDULE.main_display1)
-- [Schedule Information](https://wish.wis.ntu.edu.sg/webexe/owa/aus_schedule.main)
-- [Exam Timetable](https://wis.ntu.edu.sg/webexe/owa/exam_timetable_und.Get_detail)
+- [Course Schedule Information](https://wish.wis.ntu.edu.sg/webexe/owa/aus_schedule.main)
+- [Exam Timetable](https://wis.ntu.edu.sg/webexe/owa/exam_timetable_und.main)
 
 # Pre-requisites
 
-Ensure you have a `.env` file in the project root with the following properties set
+Ensure you have a `.env` file in the same directory as `settings.py` with the following properties set
 
 ```
-# postgres database name
-PG_DB=
+DEBUG=TRUE
 
-# postgres username
-PG_USER=
+# Secret key for generating an authentication token
+SECRET_KEY=
 
-# postgres user password
-PG_PASSWORD=
+# Name of the postgres database
+DBNAME=ntumods
 
-# postgres host IP
-PG_HOST=
+# Username to access the postgres database
+DBUSERNAME=postgres
 
-# postgres exposed port
-PG_PORT=
+# Password of the user
+DBPASSWORD=password
 ```
