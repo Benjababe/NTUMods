@@ -1,4 +1,8 @@
-import json
+from course_module.models import CourseModule, Course, Module
+from venue.models import Venue
+from timeslot.models import TimeSlot
+import os
+import django
 import re
 from typing import cast
 
@@ -6,7 +10,9 @@ import bs4
 import requests
 from bs4 import BeautifulSoup
 
-import db
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ntumod.settings')
+django.setup()
+
 
 SCHEDULE_SELECT_PAGE = "https://wish.wis.ntu.edu.sg/webexe/owa/aus_schedule.main"
 COURSE_DETAIL_PAGE = "https://wish.wis.ntu.edu.sg/webexe/owa/AUS_SCHEDULE.main_display1"
@@ -94,7 +100,7 @@ def scrape_all_courses(schedule: dict):
 
         if res.ok:
             course_modules = get_course_modules(res.text)
-            append_modules(schedule, course_modules)
+            append_modules(schedule, course["code"], course_modules)
 
         else:
             print(f"Error with scraping {course_name}")
@@ -115,6 +121,13 @@ def scrape_all_courses(schedule: dict):
 
 
 def insert_module_info(schedule: dict, html: str):
+    """ Inserts module description and grading style from scraping
+
+    Args:
+        schedule (dict): Dict containing keys "semester", "modules" and "courses"
+        html (str): Scraped html in plaintext
+    """
+
     soup = BeautifulSoup(html, "html.parser")
     module_tables = soup.find_all("table")
 
@@ -141,7 +154,14 @@ def insert_module_info(schedule: dict, html: str):
                 break
 
 
-def append_modules(schedule, course_modules):
+def append_modules(schedule: dict, course_code: str, course_modules: list[dict]):
+    """ Adds the current course modules into schedule["modules"]
+
+    Args:
+        schedule (dict): Dict containing keys "semester", "modules" and "courses"
+        course_modules (list[dict]): List of modules
+    """
+
     for course_module in course_modules:
         module_code = course_module["code"]
 
@@ -152,8 +172,12 @@ def append_modules(schedule, course_modules):
                     schedule["modules"][module_code]["timeslots"]\
                         .append(timeslot)
 
+            schedule["modules"][module_code]["course_codes"].append(
+                course_code)
+
         else:
             schedule["modules"][module_code] = {
+                "course_codes": [course_code],
                 "name": course_module["name"],
                 "timeslots": course_module["timeslots"],
                 "credits": course_module["credits"],
@@ -232,14 +256,114 @@ def get_course_modules(course_page_text: str) -> list[dict]:
     return modules
 
 
+def insert_courses(courses: list[dict]):
+    for course in courses:
+        c_code, c_sub_code, c_year, c_type = course["code"].strip().split(";")
+        c_name = course["name"]
+
+        # check if course already exists
+        if not Course.objects.filter(
+            code=c_code,
+            sub_code=c_sub_code,
+            year=c_year,
+            type=c_type,
+            full_code=course["code"]
+        ).exists():
+            course_obj = Course(
+                code=c_code,
+                sub_code=c_sub_code,
+                year=c_year,
+                name=c_name,
+                type=c_type,
+                full_code=course["code"]
+            )
+            course_obj.save()
+
+
+def insert_modules(modules: dict, semester: str, year: str):
+    for module_code, module in modules.items():
+        timeslots = module["timeslots"]
+        module_name = module["name"]
+
+        # check if module already exists
+        if not Module.objects.filter(code=module_code).exists():
+            module_obj = Module(
+                code=module_code,
+                name=module_name,
+                credits=module["credits"],
+                desc=module["desc"],
+                grading=module["grading"]
+            )
+            module_obj.save()
+        else:
+            module_obj = Module.objects.get(code=module_code)
+
+        for course_code in module["course_codes"]:
+            if not Course.objects.filter(full_code=course_code).exists():
+                continue
+            course_obj = Course.objects.get(full_code=course_code)
+
+            if not CourseModule.objects.filter(
+                course=course_obj,
+                module=module_obj
+            ).exists():
+                course_module_obj = CourseModule(
+                    course=course_obj, module=module_obj)
+                course_module_obj.save()
+
+        for timeslot in timeslots:
+            venue_name = timeslot["venue"]
+
+            # check if venue already exists
+            if not Venue.objects.filter(name=venue_name).exists():
+                venue_obj = Venue(name=venue_name)
+                venue_obj.save()
+            else:
+                venue_obj = Venue.objects.get(name=venue_name)
+
+            if "-" in timeslot["time"]:
+                t_start, t_end = map(
+                    lambda t: f"{t}", timeslot["time"].split("-")
+                )
+            else:
+                t_start, t_end = None, None
+
+            # check if timeslot already exists
+            if not TimeSlot.objects.filter(
+                index=timeslot["index"],
+                group=timeslot["group"],
+                day=timeslot["day"],
+                time_start=t_start,
+                time_end=t_end,
+                semester=semester,
+                year=year,
+                module=module_obj
+            ).exists():
+                timeslot_obj = TimeSlot(
+                    type=timeslot["type"],
+                    index=timeslot["index"],
+                    group=timeslot["group"],
+                    day=timeslot["day"],
+                    time_start=t_start,
+                    time_end=t_end,
+                    remarks=timeslot["remark"],
+                    semester=semester,
+                    year=year,
+                    module=module_obj,
+                    venue=venue_obj
+                )
+                timeslot_obj.save()
+    pass
+
+
 def scrape():
     courses = get_all_courses()
-    db.insert_courses(courses["courses"])
+    insert_courses(courses["courses"])
 
     scrape_all_courses(courses)
-    db.insert_modules(courses["modules"],
-                      courses["semester_num"],
-                      courses["year"])
+    insert_modules(courses["modules"],
+                   courses["semester_num"],
+                   courses["year"])
 
 
 if __name__ == "__main__":

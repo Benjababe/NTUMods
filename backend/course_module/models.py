@@ -9,16 +9,17 @@ class Course(models.Model):
     year = models.CharField(max_length=4, null=True, blank=True)
     name = models.CharField(max_length=100, null=True, blank=True)
     type = models.CharField(max_length=4, null=True, blank=True)
+    full_code = models.CharField(max_length=20, null=True, blank=True)
 
     def __str__(self):
         return f'ID:{self.pk} : {self.code} {self.sub_code} : {self.year} : {self.name} : {self.type}'
 
     class Meta:
+        app_label = 'course_module'
         unique_together = ('code', 'sub_code', 'year', 'type')
 
 
 class Exam(models.Model):
-    name = models.CharField(max_length=100, null=True, blank=True)
     date = models.DateField()
     time = models.CharField(max_length=10, null=True, blank=True)
     duration = models.CharField(max_length=30, null=True, blank=True)
@@ -26,10 +27,13 @@ class Exam(models.Model):
     year = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
-        return f'ID:{self.pk} : Name {self.name} : Date {self.date} : Time {self.time} : Duration {self.duration}'
+        return f'ID:{self.pk} : Date {self.date} : Time {self.time} : Duration {self.duration}'
 
     class meta:
-        unique_together = ('name', 'date', 'time', 'duration')
+        unique_together = ('date', 'time', 'duration')
+
+    class Meta:
+        app_label = 'course_module'
 
 
 # Note that you need to manually delete the old Module entry as PATCH
@@ -47,6 +51,9 @@ class Module(models.Model):
     def __str__(self):
         return f'MOD Code:{self.code} : {self.name} : {self.desc} : {self.grading} : {self.credits}'
 
+    class Meta:
+        app_label = 'course_module'
+
 
 class CourseModule(models.Model):
     course = models.ForeignKey(Course, on_delete=models.PROTECT)
@@ -57,6 +64,7 @@ class CourseModule(models.Model):
         return f'{self.course} : {self.module}'
 
     class Meta:
+        app_label = 'course_module'
         ordering = ['course', 'module']
         verbose_name_plural = 'Course Modules'
         unique_together = ('course', 'module')
