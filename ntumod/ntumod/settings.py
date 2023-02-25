@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-kk51+ftou^guj*p@ona^1-4$6u!8w7qss6&z8$n++7@7fgk_sz'
+SECRET_KEY = env('SECRET_KEY', default='123')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -40,10 +40,33 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework.authtoken',
+    'anymail',
+    'djoser',
+    'users',
     'course_module',
     'timeslot',
     'venue'
 ]
+
+# We want to send an email to our console (as demo)
+GOOGLE_RECAPTCHA_SECRET = env("GOOGLE_RECAPTCHA_SECRET", default="")
+EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='you@localhost')
+
+ANYMAIL = {
+    'MAILGUN_API_KEY': env('MAILGUN_API_KEY', default='')
+}
+
+# Specifying that we are using custom user model instead of the default one
+AUTH_USER_MODEL = 'users.CustomUser'
+
+DJOSER = {
+    "PASSWORD_RESET_CONFIRM_URL": "auth/password-reset/confirm/{uid}/{token}",
+    "SERIALIZERS": {
+        'password_reset': 'users.serializers.CustomSendEmailResetSerializer'
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -53,7 +76,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware'
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+}
 
 ROOT_URLCONF = 'ntumod.urls'
 

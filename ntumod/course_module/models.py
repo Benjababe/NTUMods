@@ -4,7 +4,7 @@ from django.db import models
 # Create your models here.
 
 class Course(models.Model):
-    code = models.CharField(max_length=10, null=True, blank=True)
+    code = models.CharField(max_length=10, null=True, blank=True, unique=True)
     sub_code = models.CharField(max_length=10, null=True, blank=True)
     year = models.CharField(max_length=4, null=True, blank=True)
     name = models.CharField(max_length=100, null=True, blank=True)
@@ -15,19 +15,15 @@ class Course(models.Model):
 
 
 class Module(models.Model):
-    code = models.CharField(max_length=10, null=True, blank=True)
+    code = models.CharField(max_length=10, null=True, blank=True, unique=True)
     sub_code = models.CharField(max_length=10, null=True, blank=True)
     year = models.CharField(max_length=4, null=True, blank=True)
     name = models.CharField(max_length=100, null=True, blank=True)
     type = models.CharField(max_length=4, null=True, blank=True)
+    module_prereq = models.ManyToManyField("self", blank=True)
 
     def __str__(self):
         return f'ID:{self.pk} : {self.code} {self.sub_code} : {self.year} : {self.name} : {self.type}'
-
-
-class PreReq(models.Model):
-    module = models.ForeignKey(Module, on_delete=models.PROTECT)
-    desc = models.TextField(null=True, blank=True)
 
 
 class CourseModule(models.Model):

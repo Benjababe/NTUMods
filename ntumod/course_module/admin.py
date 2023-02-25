@@ -20,9 +20,3 @@ class CourseAdmin(admin.ModelAdmin):
 class ModuleAdmin(admin.ModelAdmin):
     list_display = ['code', 'sub_code', 'year', 'name', 'type']
     search_fields = ['code', 'sub_code', 'year', 'name', 'type']
-
-
-@admin.register(models.PreReq)
-class PreReqAdmin(admin.ModelAdmin):
-    list_display = ['module', 'desc']
-    search_fields = ['module', 'desc']

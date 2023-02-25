@@ -14,7 +14,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
+from django.urls.conf import include
+from users.urls import urlpatterns as users_urlpatterns
 
 
 admin.site.index_title = 'NTU MODULE ADMIN'
@@ -23,4 +25,7 @@ admin.site.site_header = 'NTUMOD'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('course_module.urls')),
+    path('', include('venue.urls')),
 ]
+urlpatterns += users_urlpatterns
