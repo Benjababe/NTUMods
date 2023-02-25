@@ -20,30 +20,28 @@ class Course(models.Model):
 class Exam(models.Model):
     date = models.DateField()
     time = models.TimeField()
-    duration = models.DecimalField(max_digits=2, decimal_places=2, null=True, blank=True)
+    duration = models.CharField(max_length=10, null=True, blank=True)
 
     def __str__(self):
         return f'ID:{self.pk} : Date {self.date} : Time {self.time} : Duration {self.duration}'
 
 
-# Note that you need to manually delete the old Module entry as PATCH
-# creates a new entry if you try to change the primary key in django
 class Module(models.Model):
-    code = models.CharField(primary_key=True, max_length=10, null=False, blank=False)
+    code = models.CharField(max_length=10, null=True, blank=True, unique=True)
     name = models.CharField(max_length=100, null=True, blank=True)
     desc = models.TextField(null=True, blank=True)
     grading = models.CharField(max_length=20, null=True, blank=True)
     credits = models.FloatField(null=True, blank=True)
-    module_prereq = models.ManyToManyField("self", null=True, blank=True)
+    module_prereq = models.ManyToManyField("self", blank=True)
     exam = models.ManyToManyField(Exam, blank=True)
 
     def __str__(self):
-        return f'MOD Code:{self.code} : {self.name} : {self.desc} : {self.grading} : {self.credits}'
+        return f'ID:{self.pk} : {self.code} : {self.name} : {self.desc} : {self.grading} : {self.credits}'
 
 
 class CourseModule(models.Model):
     course = models.ForeignKey(Course, on_delete=models.PROTECT)
-    module = models.ForeignKey(Module, to_field='code', on_delete=models.PROTECT)
+    module = models.ForeignKey(Module, on_delete=models.PROTECT)
 
     def __str__(self):
         return f'{self.course} : {self.module}'

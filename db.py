@@ -61,12 +61,14 @@ def insert_courses(courses: list[dict]):
     insert_course_dml = f'''
         INSERT INTO "public"."course_module_course"
         (code, sub_code, year, name, type)
-        VALUES {",".join(course_insert_vals)};
+        VALUES {",".join(course_insert_vals)}
+        ON CONFLICT ('code', 'sub_code', 'year', 'type')
+        DO NOTHING
     '''
     run_query(insert_course_dml)
 
 
-def insert_modules(modules: dict):
+def insert_modules(modules: dict, semester: str, year: str):
     if len(modules) == 0:
         return
 
@@ -79,7 +81,13 @@ def insert_modules(modules: dict):
 
         module_name = module["name"].replace("'", "")
         module_insert_vals.append(
-            f'''('{module_code}', '{module_name}', '{module["credits"]}', '{module["desc"]}', '{module["grading"]}')'''
+            f'''(
+                '{module_code}', 
+                '{module_name}', 
+                '{module["credits"]}', 
+                '{module["desc"]}', 
+                '{module["grading"]}'
+            )'''
         )
 
         for timeslot in timeslots:
@@ -95,17 +103,26 @@ def insert_modules(modules: dict):
             venue_insert_vals.add(f"('{venue}')")
 
             timeslot_insert_vals.append(
-                f'''('{timeslot["type"]}', '{timeslot["group"]}', '{timeslot["day"]}', {t_start}, {t_end}, '{timeslot["remark"]}', '{timeslot["index"]}',
-                (SELECT id FROM "public"."course_module_module" WHERE code='{module_code}'),
-                (SELECT id FROM "public"."venue_venue" WHERE name='{venue}')
-                )'''
-            )
+                f'''(
+                    '{timeslot["type"]}',
+                    '{timeslot["group"]}',
+                    '{timeslot["day"]}',
+                    {t_start},
+                    {t_end},
+                    '{timeslot["remark"]}',
+                    '{semester}',
+                    '{year}',
+                    '{timeslot["index"]}',
+                    '{module_code}',
+                    (SELECT id FROM "public"."venue_venue" WHERE name='{venue}')
+                )''')
 
     module_insert_dml = f'''
         INSERT INTO "public"."course_module_module"
         (code, "name", credits, "desc", grading)
         VALUES {",".join(module_insert_vals)}
-        RETURNING id
+        ON CONFLICT (code)
+        DO NOTHING
     '''
     run_query(module_insert_dml)
 
@@ -113,13 +130,16 @@ def insert_modules(modules: dict):
         INSERT INTO "public"."venue_venue"
         (name)
         VALUES{",".join(list(venue_insert_vals))}
-        RETURNING id
+        ON CONFLICT (name)
+        DO NOTHING
     '''
     run_query(venue_insert_dml)
 
     timeslot_insert_dml = f'''
         INSERT INTO "public"."timeslot_timeslot"
-        (type, "group", day, time_start, time_end, remarks, index, module_id, venue_id)
+        (type, "group", day, time_start, time_end, remarks, semester, year, index, module_id, venue_id)
         VALUES{",".join(timeslot_insert_vals)}
+        ON CONFLICT (index, "group", day, time_start, time_end, semester, year, module_id)
+        DO NOTHING
     '''
     run_query(timeslot_insert_dml)

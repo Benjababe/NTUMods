@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
                 (
                     "semester",
                     models.IntegerField(
-                        default=1, validators=[timeslot.models.validate_sem]
+                        default=1
                     ),
                 ),
                 ("year", models.IntegerField(blank=True, null=True)),
@@ -57,6 +57,6 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"verbose_name_plural": "Time Slots",},
+            options={"verbose_name_plural": "Time Slots", },
         ),
     ]

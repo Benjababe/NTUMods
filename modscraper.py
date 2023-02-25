@@ -74,6 +74,8 @@ def scrape_all_courses(schedule: dict):
     semester = schedule["semester"]
     courses = schedule["courses"]
 
+    schedule["year"], schedule["semester_num"] = semester.split(";")
+
     for course in courses:
         course_name = course["name"]
         print(f"Scraping {course_name}")
@@ -235,7 +237,9 @@ def scrape():
     db.insert_courses(courses["courses"])
 
     scrape_all_courses(courses)
-    db.insert_modules(courses["modules"])
+    db.insert_modules(courses["modules"],
+                      courses["semester_num"],
+                      courses["year"])
 
 
 if __name__ == "__main__":
