@@ -5,10 +5,14 @@ body {
   line-height: 1.5;
 }
 
-.main-block {
+.app-container {
   max-width: 1920px;
   width: fit-content;
   margin: auto;
+}
+
+.img-logo {
+  width: 12rem;
 }
 
 .tab-link-container {
@@ -71,7 +75,8 @@ body {
 }
 
 .pager input[type="button"],
-.venue-list button {
+.venue-list button,
+.ntumods-btn {
   cursor: pointer;
   background-color: rgb(61, 61, 181);
   color: white;
@@ -121,4 +126,19 @@ body {
   overflow-y: auto;
   display: inline-block;
   margin-left: 4rem;
+}
+
+.no-margin-left {
+  margin-left: initial;
+}
+
+.course-list {
+  margin-top: 1rem;
+  position: absolute;
+  visibility: hidden;
+}
+
+.course-list.show {
+  visibility: visible;
+  position: relative;
 }

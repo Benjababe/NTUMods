@@ -18,7 +18,7 @@ const TabBlock = () => {
     }
 
     return (
-        <div className="main-block">
+        <div>
             <div className="tab-link-container">
                 <button
                     className={`tab-link ${(block === TAB_MODULES) ? "tab-link-active" : ""}`}
