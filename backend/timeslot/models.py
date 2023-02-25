@@ -22,6 +22,7 @@ class TimeSlot(models.Model):
         Module, to_field='code', on_delete=models.PROTECT)
 
     class Meta:
+        app_label = 'timeslot'
         verbose_name_plural = "Time Slots"
         unique_together = ('index', 'group', 'day', 'time_start',
                            'time_end', 'semester', 'year', 'module')

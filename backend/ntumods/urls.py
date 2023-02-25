@@ -24,7 +24,7 @@ import frontend.views as frontend_views
 
 admin.site.index_title = 'NTU MODULE ADMIN'
 admin.site.site_url = 'www.google.com'
-admin.site.site_header = 'NTUMOD'
+admin.site.site_header = 'NTUMODS'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
