@@ -16,6 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+
+admin.site.index_title = 'NTU MODULE ADMIN'
+admin.site.site_url = 'www.google.com'
+admin.site.site_header = 'NTUMOD'
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
