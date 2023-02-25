@@ -1,7 +1,11 @@
-const VenueItem = ({ venue }) => {
+const VenueItem = ({ venue, loadTimeslots }) => {
     return (
         <div>
-            {venue}
+            <button
+                className="btn-venue"
+                onClick={() => loadTimeslots(venue.id)}>
+                {venue.name}
+            </button>
         </div>
     );
 }

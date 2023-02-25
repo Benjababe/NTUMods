@@ -143,8 +143,13 @@ def append_modules(schedule, course_modules):
     for course_module in course_modules:
         module_code = course_module["code"]
 
-        if module_code in schedule:
-            pass
+        # add timeslots if necessary
+        if module_code in schedule["modules"]:
+            for timeslot in course_module["timeslots"]:
+                if timeslot not in schedule["modules"][module_code]["timeslots"]:
+                    schedule["modules"][module_code]["timeslots"]\
+                        .append(timeslot)
+
         else:
             schedule["modules"][module_code] = {
                 "name": course_module["name"],
