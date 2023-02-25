@@ -7,7 +7,7 @@ from . import models
 @admin.register(models.CourseModule)
 class CourseModuleAdmin(admin.ModelAdmin):
     list_display = ['course', 'module']
-    search_fields = ['course', 'module']
+    search_fields = ['course__name', 'module__name']
 
 
 @admin.register(models.Course)
