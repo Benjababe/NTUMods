@@ -4,6 +4,7 @@ import VenueItem from "./VenueItem";
 
 const Venues = () => {
     const [venues, setVenues] = useState(null);
+    const [timeslots, setTimeslots] = useState([]);
 
     useEffect(() => {
         if (venues == null) {
@@ -13,6 +14,11 @@ const Venues = () => {
         }
     }, [venues]);
 
+    const loadTimeslots = async (venueId) => {
+        const timeslots = await venueService.getTimeslots(venueId);
+        console.log(timeslots);
+    }
+
     const getUrl = async (url) => {
         const venues = await venueService.getUrl(url);
         setVenues(venues);
@@ -21,7 +27,7 @@ const Venues = () => {
     const venuesList = (venues == null)
         ? []
         : venues["results"].map((venue) => {
-            return <VenueItem key={venue.id} venue={venue.name} />;
+            return <VenueItem key={venue.id} venue={venue} loadTimeslots={loadTimeslots} />;
         });
 
     return (
