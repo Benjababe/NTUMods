@@ -1,6 +1,8 @@
+from operator import or_
+
 from django.db.models import Count
 from django.db.models.query_utils import Q
-from rest_framework import filters, permissions, viewsets, generics
+from rest_framework import filters, generics, permissions, viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
@@ -29,17 +31,16 @@ class ModuleViewSet(viewsets.ModelViewSet):
 
 class ModuleSearchViewSet(generics.ListAPIView):
     serializer_class = ModuleSerializer
+    pagination_class = StandardResultSetPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
 
     def get_queryset(self):
-        queryset = Module.objects.all()
+        queryset = Module.objects.all().order_by('code')
 
-        module_code = self.request.query_params.get('code')
-        module_name = self.request.query_params.get('name')
+        query = self.request.query_params.get('query')
 
-        if module_code is not None:
-            queryset = queryset.filter(name__icontains=module_name)
-        if module_name is not None:
-            queryset = queryset.filter(code__icontains=module_code)
+        if query is not None:
+            queryset = queryset.filter(
+                or_(Q(name__icontains=query), Q(code__icontains=query)))
 
         return queryset
