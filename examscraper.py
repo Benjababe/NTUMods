@@ -4,6 +4,8 @@ from typing import cast
 import requests
 from bs4 import BeautifulSoup
 
+import db
+
 EXAM_SEMSTER_PAGE = "https://wis.ntu.edu.sg/webexe/owa/exam_timetable_und.MainSubmit"
 EXAM_TIMETABLE_PAGE = "https://wis.ntu.edu.sg/webexe/owa/exam_timetable_und.Get_detail"
 
@@ -43,7 +45,7 @@ def get_latest_sem() -> Semester:
     return Semester(regex_res.group(1), regex_res.group(2), latest_semester["value"])
 
 
-def get_exam_dates(semester: Semester):
+def get_exams(semester: Semester):
     res = session.post(EXAM_TIMETABLE_PAGE, {
         "p_exam_dt": "",
         "p_start_time": "",
@@ -59,16 +61,21 @@ def get_exam_dates(semester: Semester):
         "bOption": "Next"
     })
 
-    process_exam_dates(res.text)
+    exams = process_exams(res.text)
+    return exams
 
 
-def process_exam_dates(html: str):
+def process_exams(html: str):
+    exams = {}
     soup = BeautifulSoup(html, "html.parser")
     exam_rows = soup.find_all("tr", {"align": "yes"})
 
     # exam rows: date / day / time / course code / course title / duration
     for exam_row in exam_rows:
         exam_details = exam_row.find_all("td")
+
+        if len(exam_details) == 0:
+            continue
 
         date = exam_details[0].text.strip()
         day = exam_details[1].text.strip()
@@ -77,6 +84,21 @@ def process_exam_dates(html: str):
         course_title = exam_details[4].text.strip()
         duration = exam_details[5].text.strip()
 
+        exams[course_code] = {
+            "date": date,
+            "day": day,
+            "time": time,
+            "duration": duration,
+        }
 
-plan_no = get_latest_sem()
-get_exam_dates(plan_no)
+    return exams
+
+
+def scrape():
+    semester = get_latest_sem()
+    exams = get_exams(semester)
+    db.insert_exams(exams, semester.num, semester.year)
+
+
+if __name__ == "__main__":
+    scrape()

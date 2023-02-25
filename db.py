@@ -143,3 +143,23 @@ def insert_modules(modules: dict, semester: str, year: str):
         DO NOTHING
     '''
     run_query(timeslot_insert_dml)
+
+
+def insert_exams(exams: dict, semester: str, year: str):
+    exam_insert_vals = []
+
+    for module_code, exam_details in exams.items():
+        exam_insert_vals.append(f'''(
+            '{exam_details["date"]}',
+            '{exam_details["time"]}',
+            '{exam_details["duration"]}',
+            '{semester}',
+            '{year}'
+        )''')
+
+    exam_insert_dml = f'''
+        INSERT INTO "public"."course_module_exam"
+        (date, time, duration, semester, year)
+        VALUES{",".join(exam_insert_vals)}
+    '''
+    run_query(exam_insert_dml)
