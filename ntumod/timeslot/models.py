@@ -13,5 +13,8 @@ class TimeSlot(models.Model):
     time_end = models.TimeField(null=True, blank=True)
     remarks = models.TextField(null=True, blank=True)
 
-    venue = models.ForeignKey(Venue, on_delete=models.PROTECT)
+    venue = models.ForeignKey(Venue, on_delete=models.PROTECT, related_name='venue')
     module = models.ForeignKey(Module, on_delete=models.PROTECT)
+
+    class Meta:
+        verbose_name_plural = "Time Slots"
