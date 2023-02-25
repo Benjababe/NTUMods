@@ -70,49 +70,17 @@ def insert_modules(modules: dict):
     if len(modules) == 0:
         return
 
-    map_module_id = []
-    map_venue_id = []
-
     module_insert_vals = []
     timeslot_insert_vals = []
-    venue_insert_vals = []
+    venue_insert_vals = set()
 
     for module_code, module in modules.items():
         timeslots = module["timeslots"]
 
-        map_module_id.append(module_code)
+        module_name = module["name"].replace("'", "")
         module_insert_vals.append(
-            f'''('{module_code}', '', '', '{module["name"]}', '')'''
+            f'''('{module_code}', '{module_name}')'''
         )
-
-        for timeslot in timeslots:
-            venue = timeslot["venue"]
-            venue = venue.replace("/", "")
-            if venue not in map_venue_id:
-                map_venue_id.append(venue)
-                venue_insert_vals.append(f"('{venue}')")
-
-    module_insert_dml = f'''
-        INSERT INTO "public"."course_module_module"
-        (code, sub_code, year, name, type)
-        VALUES {",".join(module_insert_vals)}
-        RETURNING id
-    '''
-    module_ids = list(map(lambda x: x[0], run_query_return(module_insert_dml)))
-    map_module_id = dict(zip(map_module_id, module_ids))
-
-    venue_insert_dml = f'''
-        INSERT INTO "public"."venue_venue"
-        (name)
-        VALUES{",".join(list(venue_insert_vals))}
-        RETURNING id
-    '''
-    venue_ids = list(map(lambda x: x[0], run_query_return(venue_insert_dml)))
-    map_venue_id = dict(zip(map_venue_id, venue_ids))
-
-    for module_code, module in modules.items():
-        timeslots = module["timeslots"]
-        module_id = map_module_id[module_code]
 
         for timeslot in timeslots:
             if "-" in timeslot["time"]:
@@ -124,11 +92,30 @@ def insert_modules(modules: dict):
 
             venue = timeslot["venue"]
             venue = venue.replace("/", "")
-            venue_id = map_venue_id[venue]
+            venue_insert_vals.add(f"('{venue}')")
 
             timeslot_insert_vals.append(
-                f'''('{timeslot["type"]}', '{timeslot["group"]}', '{timeslot["day"]}', {t_start}, {t_end}, '{timeslot["remark"]}', '{timeslot["index"]}', '{module_id}', '{venue_id}')'''
+                f'''('{timeslot["type"]}', '{timeslot["group"]}', '{timeslot["day"]}', {t_start}, {t_end}, '{timeslot["remark"]}', '{timeslot["index"]}',
+                (SELECT id FROM "public"."course_module_module" WHERE code='{module_code}'),
+                (SELECT id FROM "public"."venue_venue" WHERE name='{venue}')
+                )'''
             )
+
+    module_insert_dml = f'''
+        INSERT INTO "public"."course_module_module"
+        (code, name)
+        VALUES {",".join(module_insert_vals)}
+        RETURNING id
+    '''
+    run_query(module_insert_dml)
+
+    venue_insert_dml = f'''
+        INSERT INTO "public"."venue_venue"
+        (name)
+        VALUES{",".join(list(venue_insert_vals))}
+        RETURNING id
+    '''
+    run_query(venue_insert_dml)
 
     timeslot_insert_dml = f'''
         INSERT INTO "public"."timeslot_timeslot"

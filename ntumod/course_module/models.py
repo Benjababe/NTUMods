@@ -13,6 +13,9 @@ class Course(models.Model):
     def __str__(self):
         return f'ID:{self.pk} : {self.code} {self.sub_code} : {self.year} : {self.name} : {self.type}'
 
+    class Meta:
+        unique_together = ('code', 'sub_code', 'year', 'type')
+
 
 class Module(models.Model):
     code = models.CharField(max_length=10, null=True, blank=True, unique=True)

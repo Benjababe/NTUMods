@@ -69,7 +69,7 @@ def scrape_all_courses(schedule: dict):
     semester = schedule["semester"]
     courses = schedule["courses"]
 
-    for course in courses[:6]:
+    for course in courses:
         course_name = course["name"]
         print(f"Scraping {course_name}")
 
@@ -137,11 +137,14 @@ def get_course_modules(course_page_text: str) -> list[dict]:
         time_slots = time_table.find_all("tr")
         slot_index = "-1"
 
-        for time_slot in time_slots[1:]:
+        for time_slot in time_slots:
             time_slot_cells = time_slot.find_all("td")
             time_slot_cells = list(
                 map(lambda c: c.text.strip(), time_slot_cells)
             )
+
+            if len(time_slot_cells) == 0:
+                continue
 
             # if index is empty, use the previous stored one
             if time_slot_cells[0] != "":
