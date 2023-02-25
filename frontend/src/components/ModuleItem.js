@@ -2,7 +2,7 @@ const ModuleItem = ({ module }) => {
     return (
         <div>
             <h4>[{module.code}] {module.name}</h4>
-            <p>{module.credits} CUs</p>
+            <p>{module.credits} AUs</p>
             <p>{module.desc}</p>
         </div>
     );

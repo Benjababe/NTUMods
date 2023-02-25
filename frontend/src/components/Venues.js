@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import venueService from "../services/venues";
 import VenueItem from "./VenueItem";
+import VenueTimetable from "./VenueTimetable";
 
 const Venues = () => {
     const [venues, setVenues] = useState(null);
@@ -16,7 +17,7 @@ const Venues = () => {
 
     const loadTimeslots = async (venueId) => {
         const timeslots = await venueService.getTimeslots(venueId);
-        console.log(timeslots);
+        setTimeslots(timeslots);
     }
 
     const getUrl = async (url) => {
@@ -44,6 +45,7 @@ const Venues = () => {
                 {(venues && venues.previous) ? <input type="button" value="Previous" onClick={() => getUrl(venues.previous)} /> : ""}
                 {(venues && venues.next) ? <input type="button" value="Next" onClick={() => getUrl(venues.next)} /> : ""}
             </div>
+            <VenueTimetable timeslots={timeslots} />
         </>
     );
 }
