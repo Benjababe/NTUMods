@@ -1,6 +1,16 @@
-const venueUrl = "/venue/";
-const timeslotUrl = "/timeslot/";
-const searchUrl = "/venuesearch/"
+let venueUrl = "";
+let timeslotUrl = "";
+let searchUrl = ""
+
+if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+    venueUrl = "http://localhost:8000/venue/";
+    venueUrl = "http://localhost:8000/timeslot/";
+    venueUrl = "http://localhost:8000/venuesearch/";
+} else {
+    venueUrl = "/venue/";
+    timeslotUrl = "/timeslot/";
+    searchUrl = "/venuesearch/"
+}
 
 const getAll = async () => {
     const venues = await fetch(venueUrl);
