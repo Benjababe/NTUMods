@@ -1,8 +1,6 @@
-from django.db.models import Count
-from django.db.models.query_utils import Q
-from rest_framework import filters, generics, permissions, viewsets
+from rest_framework import filters, generics, viewsets
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.response import Response
+from rest_framework.utils.urls import replace_query_param
 
 from .models import Venue
 from .serializers import VenueSerializer
@@ -13,6 +11,32 @@ class StandardResultSetPagination(PageNumberPagination):
     page_size = 26  # Default number of records per page when not specified
     page_size_query_param = 'page_size'
     max_page_size = 26  # Max Limit
+
+    def get_next_link(self):
+        if not self.page.has_next():
+            return None
+
+        url = self.request.build_absolute_uri()
+        scheme = self.request.is_secure() and "https" or "http"
+        fwd_scheme = self.request.META.get("HTTP_X_FORWARDED_PROTO")
+        is_secure = (scheme == "https" or fwd_scheme == "https")
+
+        new_url = url.replace(f"http://", "https://", 1) if is_secure else url
+        page_number = self.page.next_page_number()
+        return replace_query_param(new_url, self.page_query_param, page_number)
+
+    def get_previous_link(self):
+        if not self.page.has_previous():
+            return None
+
+        url = self.request.build_absolute_uri()
+        scheme = self.request.is_secure() and "https" or "http"
+        fwd_scheme = self.request.META.get("HTTP_X_FORWARDED_PROTO")
+        is_secure = (scheme == "https" or fwd_scheme == "https")
+
+        new_url = url.replace(f"http://", "https://", 1) if is_secure else url
+        page_number = self.page.next_page_number()
+        return replace_query_param(new_url, self.page_query_param, page_number)
 
 
 class VenueViewSet(viewsets.ModelViewSet):
