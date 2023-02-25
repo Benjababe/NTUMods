@@ -12,11 +12,11 @@ class CourseModuleAdmin(admin.ModelAdmin):
 
 @admin.register(models.Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ['code', 'name', 'desc', 'grading', 'credits']
-    search_fields = ['code', 'name', 'desc', 'grading', 'credits']
+    list_display = ['code', 'sub_code', 'year', 'name', 'type']
+    search_fields = ['code', 'sub_code', 'year', 'name', 'type']
 
 
 @admin.register(models.Module)
 class ModuleAdmin(admin.ModelAdmin):
-    list_display = ['code', 'sub_code', 'year', 'name', 'type']
-    search_fields = ['code', 'sub_code', 'year', 'name', 'type']
+    list_display = ['code', 'name', 'desc', 'grading', 'credits']
+    search_fields = ['code', 'name', 'desc', 'grading', 'credits']
