@@ -79,7 +79,7 @@ def insert_modules(modules: dict):
 
         module_name = module["name"].replace("'", "")
         module_insert_vals.append(
-            f'''('{module_code}', '{module_name}')'''
+            f'''('{module_code}', '{module_name}', '{module["credits"]}', '{module["desc"]}', '{module["grading"]}')'''
         )
 
         for timeslot in timeslots:
@@ -103,7 +103,7 @@ def insert_modules(modules: dict):
 
     module_insert_dml = f'''
         INSERT INTO "public"."course_module_module"
-        (code, name)
+        (code, "name", credits, "desc", grading)
         VALUES {",".join(module_insert_vals)}
         RETURNING id
     '''

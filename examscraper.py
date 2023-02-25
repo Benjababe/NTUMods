@@ -1,8 +1,8 @@
 import re
-import requests
-
-from bs4 import BeautifulSoup
 from typing import cast
+
+import requests
+from bs4 import BeautifulSoup
 
 EXAM_SEMSTER_PAGE = "https://wis.ntu.edu.sg/webexe/owa/exam_timetable_und.MainSubmit"
 EXAM_TIMETABLE_PAGE = "https://wis.ntu.edu.sg/webexe/owa/exam_timetable_und.Get_detail"
