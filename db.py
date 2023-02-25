@@ -1,8 +1,8 @@
 import os
-import psycopg2
-
-from dotenv import load_dotenv
 from pathlib import Path
+
+import psycopg2
+from dotenv import load_dotenv
 
 load_dotenv(dotenv_path=Path("./.env"))
 
@@ -21,40 +21,30 @@ def run_query(query: str):
     params = get_connect_params()
     conn = psycopg2.connect(**params)
 
-    with conn:
-        with conn.cursor() as cur:
-            cur.execute(query)
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(query)
+    except Exception as ex:
+        print(ex)
 
 
-def setup_semester(semester: str):
-    schema_ddl = f"CREATE SCHEMA IF NOT EXISTS \"{semester}\";"
-    run_query(schema_ddl)
+def run_query_return(query: str) -> list[tuple[int]]:
+    params = get_connect_params()
+    conn = psycopg2.connect(**params)
 
-    module_ddl = f'''
-        CREATE TABLE IF NOT EXISTS "{semester}"."module" (
-            module_id INT GENERATED ALWAYS AS IDENTITY,
-            code VARCHAR(10) NOT NULL,
-            name VARCHAR(100) NOT NULL,
-            PRIMARY KEY ("module_id")
-        );
-    '''
-    run_query(module_ddl)
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(query)
+                return cur.fetchall()
+    except Exception as ex:
+        print(ex)
 
-    course_ddl = f'''
-        CREATE TABLE IF NOT EXISTS "{semester}"."course" (
-            course_id INT GENERATED ALWAYS AS IDENTITY,
-            code VARCHAR(10) NOT NULL,
-            sub_code VARCHAR(10) NOT NULL,
-            year VARCHAR(4) NOT NULL,
-            name VARCHAR(100) NOT NULL,
-            type VARCHAR(4) NOT NULL,
-            PRIMARY KEY ("course_id")
-        );
-    '''
-    run_query(course_ddl)
+    return []
 
 
-def insert_courses(semester: str, courses: list[dict]):
+def insert_courses(courses: list[dict]):
     if len(courses) == 0:
         return
 
@@ -69,8 +59,80 @@ def insert_courses(semester: str, courses: list[dict]):
         )
 
     insert_course_dml = f'''
-        INSERT INTO "{semester}"."course"
+        INSERT INTO "public"."course_module_course"
         (code, sub_code, year, name, type)
         VALUES {",".join(course_insert_vals)};
     '''
     run_query(insert_course_dml)
+
+
+def insert_modules(modules: dict):
+    if len(modules) == 0:
+        return
+
+    map_module_id = []
+    map_venue_id = []
+
+    module_insert_vals = []
+    timeslot_insert_vals = []
+    venue_insert_vals = []
+
+    for module_code, module in modules.items():
+        timeslots = module["timeslots"]
+
+        map_module_id.append(module_code)
+        module_insert_vals.append(
+            f'''('{module_code}', '', '', '{module["name"]}', '')'''
+        )
+
+        for timeslot in timeslots:
+            venue = timeslot["venue"]
+            venue = venue.replace("/", "")
+            if venue not in map_venue_id:
+                map_venue_id.append(venue)
+                venue_insert_vals.append(f"('{venue}')")
+
+    module_insert_dml = f'''
+        INSERT INTO "public"."course_module_module"
+        (code, sub_code, year, name, type)
+        VALUES {",".join(module_insert_vals)}
+        RETURNING id
+    '''
+    module_ids = list(map(lambda x: x[0], run_query_return(module_insert_dml)))
+    map_module_id = dict(zip(map_module_id, module_ids))
+
+    venue_insert_dml = f'''
+        INSERT INTO "public"."venue_venue"
+        (name)
+        VALUES{",".join(list(venue_insert_vals))}
+        RETURNING id
+    '''
+    venue_ids = list(map(lambda x: x[0], run_query_return(venue_insert_dml)))
+    map_venue_id = dict(zip(map_venue_id, venue_ids))
+
+    for module_code, module in modules.items():
+        timeslots = module["timeslots"]
+        module_id = map_module_id[module_code]
+
+        for timeslot in timeslots:
+            if "-" in timeslot["time"]:
+                t_start, t_end = map(
+                    lambda t: f"'{t}'", timeslot["time"].split("-")
+                )
+            else:
+                t_start, t_end = "NULL", "NULL"
+
+            venue = timeslot["venue"]
+            venue = venue.replace("/", "")
+            venue_id = map_venue_id[venue]
+
+            timeslot_insert_vals.append(
+                f'''('{timeslot["type"]}', '{timeslot["group"]}', '{timeslot["day"]}', {t_start}, {t_end}, '{timeslot["remark"]}', '{timeslot["index"]}', '{module_id}', '{venue_id}')'''
+            )
+
+    timeslot_insert_dml = f'''
+        INSERT INTO "public"."timeslot_timeslot"
+        (type, "group", day, time_start, time_end, remarks, index, module_id, venue_id)
+        VALUES{",".join(timeslot_insert_vals)}
+    '''
+    run_query(timeslot_insert_dml)

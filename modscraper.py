@@ -1,8 +1,11 @@
-import bs4
 import json
+from typing import cast
+
+import bs4
 import requests
 from bs4 import BeautifulSoup
-from typing import cast
+
+import db
 
 SCHEDULE_SELECT_PAGE = "https://wish.wis.ntu.edu.sg/webexe/owa/aus_schedule.main"
 COURSE_DETAIL_PAGE = "https://wish.wis.ntu.edu.sg/webexe/owa/AUS_SCHEDULE.main_display1"
@@ -11,11 +14,9 @@ COURSE_DETAIL_PAGE = "https://wish.wis.ntu.edu.sg/webexe/owa/AUS_SCHEDULE.main_d
 def get_all_courses(force_semester="") -> dict:
     """
     Returns all courses for the current or given semester
-
     Args:
         force_semester (str, optional): Academic semester to filter, format "YYYY;S". 
         Eg. "2022;2" for 2022 Sem 2 Defaults to "".
-
     Returns:
         dict: Dict containing the semester and all courses in it.
     """
@@ -60,7 +61,6 @@ def scrape_all_courses(schedule: dict):
     """
     Goes through all available courses and scrapes 
     the modules for the given academic semester
-
     Args:
         schedule (dict): Dict containing keys "semester" and "courses"
     """
@@ -69,7 +69,7 @@ def scrape_all_courses(schedule: dict):
     semester = schedule["semester"]
     courses = schedule["courses"]
 
-    for course in courses:
+    for course in courses[:6]:
         course_name = course["name"]
         print(f"Scraping {course_name}")
 
@@ -100,7 +100,7 @@ def append_modules(schedule, course_modules):
         if module_code in schedule:
             pass
         else:
-            schedule[module_code] = {
+            schedule["modules"][module_code] = {
                 "name": course_module["name"],
                 "timeslots": course_module["timeslots"]
             }
@@ -110,10 +110,8 @@ def get_course_modules(course_page_text: str) -> list[dict]:
     """
     Parses the course page with all the modules and returns a list 
     of modules for the course in the given academic semester
-
     Args:
         course_page_text (str): Text response from course detail POST request
-
     Returns:
         List[dict]: List of modules for the course in the given academic semester
     """
@@ -126,8 +124,8 @@ def get_course_modules(course_page_text: str) -> list[dict]:
     # each tbl_header represents a module
     for tbl_header in tbl_headers:
         header_cells = tbl_header.find("tr").find_all("td")
-        module_code = header_cells[1].text
-        module_name = header_cells[0].text
+        module_code = header_cells[0].text
+        module_name = header_cells[1].text
 
         module = {
             "code": module_code,
@@ -146,8 +144,8 @@ def get_course_modules(course_page_text: str) -> list[dict]:
             )
 
             # if index is empty, use the previous stored one
-            if time_slot_cells[1] != "":
-                slot_index = time_slot_cells[1]
+            if time_slot_cells[0] != "":
+                slot_index = time_slot_cells[0]
 
             # split the array, skipping the index
             slot_type, slot_group, slot_day, \
@@ -170,7 +168,11 @@ def get_course_modules(course_page_text: str) -> list[dict]:
 
 def scrape():
     courses = get_all_courses()
-    scrape_all_courses(courses)
+    db.insert_courses(courses["courses"])
 
-    with open("modules.json", "w") as f:
-        f.write(json.dumps(courses))
+    scrape_all_courses(courses)
+    db.insert_modules(courses["modules"])
+
+
+if __name__ == "__main__":
+    scrape()
