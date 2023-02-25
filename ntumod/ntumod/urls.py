@@ -17,7 +17,9 @@ from django.contrib import admin
 from django.urls import path, re_path
 from django.urls.conf import include
 from users.urls import urlpatterns as users_urlpatterns
+from course_module.views import ModuleSearchViewSet
 from timeslot.views import VenueTimeSlotViewSet
+from venue.views import VenueSearchViewSet
 
 admin.site.index_title = 'NTU MODULE ADMIN'
 admin.site.site_url = 'www.google.com'
@@ -27,6 +29,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('course_module.urls')),
     path('', include('venue.urls')),
+    re_path('modulesearch/', ModuleSearchViewSet.as_view()),
+    re_path('venuesearch/', VenueSearchViewSet.as_view()),
     re_path('timeslot/', VenueTimeSlotViewSet.as_view()),
 ]
 

@@ -1,6 +1,6 @@
 from django.db.models import Count
 from django.db.models.query_utils import Q
-from rest_framework import filters, permissions, viewsets
+from rest_framework import filters, permissions, viewsets, generics
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
@@ -25,3 +25,18 @@ class VenueViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save()
+
+
+class VenueSearchViewSet(generics.ListAPIView):
+    serializer_class = VenueSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+
+    def get_queryset(self):
+        queryset = Venue.objects.all()
+
+        venue_name = self.request.query_params.get('name')
+
+        if venue_name is not None:
+            queryset = queryset.filter(name__icontains=venue_name)
+
+        return queryset

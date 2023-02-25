@@ -1,6 +1,6 @@
 from django.db.models import Count
 from django.db.models.query_utils import Q
-from rest_framework import filters, permissions, viewsets
+from rest_framework import filters, permissions, viewsets, generics
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
@@ -25,3 +25,21 @@ class ModuleViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save()
+
+
+class ModuleSearchViewSet(generics.ListAPIView):
+    serializer_class = ModuleSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+
+    def get_queryset(self):
+        queryset = Module.objects.all()
+
+        module_code = self.request.query_params.get('code')
+        module_name = self.request.query_params.get('name')
+
+        if module_code is not None:
+            queryset = queryset.filter(name__icontains=module_name)
+        if module_name is not None:
+            queryset = queryset.filter(code__icontains=module_code)
+
+        return queryset
