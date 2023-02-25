@@ -126,8 +126,8 @@ def get_course_modules(course_page_text: str) -> list[dict]:
     # each tbl_header represents a module
     for tbl_header in tbl_headers:
         header_cells = tbl_header.find("tr").find_all("td")
-        module_code = header_cells[0].text
-        module_name = header_cells[1].text
+        module_code = header_cells[1].text
+        module_name = header_cells[0].text
 
         module = {
             "code": module_code,
@@ -146,8 +146,8 @@ def get_course_modules(course_page_text: str) -> list[dict]:
             )
 
             # if index is empty, use the previous stored one
-            if time_slot_cells[0] != "":
-                slot_index = time_slot_cells[0]
+            if time_slot_cells[1] != "":
+                slot_index = time_slot_cells[1]
 
             # split the array, skipping the index
             slot_type, slot_group, slot_day, \
