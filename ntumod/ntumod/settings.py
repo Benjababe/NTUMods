@@ -10,8 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
-import environ
 from pathlib import Path
+
+import environ
 
 env = environ.Env()
 environ.Env.read_env()
@@ -28,7 +29,7 @@ SECRET_KEY = env('SECRET_KEY', default='123')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost"]
 
 
 # Application definition
@@ -41,12 +42,25 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
+    'corsheaders',
     'anymail',
     'djoser',
     'users',
     'course_module',
     'timeslot',
     'venue'
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:3000',  # for localhost (REACT Default)
+    'http://localhost:8080',  # for localhost (Developlemt)
+)
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',  # for localhost (REACT Default)
+    'http://localhost:8080',  # for localhost (Developlemt)
 ]
 
 # We want to send an email to our console (as demo)
@@ -73,6 +87,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',

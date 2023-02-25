@@ -17,6 +17,15 @@ class Course(models.Model):
         unique_together = ('code', 'sub_code', 'year', 'type')
 
 
+class Exam(models.Model):
+    date = models.DateField()
+    time = models.TimeField()
+    duration = models.DecimalField(max_digits=2, decimal_places=2, null=True, blank=True)
+
+    def __str__(self):
+        return f'ID:{self.pk} : Date {self.date} : Time {self.time} : Duration {self.duration}'
+
+
 class Module(models.Model):
     code = models.CharField(max_length=10, null=True, blank=True, unique=True)
     name = models.CharField(max_length=100, null=True, blank=True)
@@ -24,6 +33,7 @@ class Module(models.Model):
     grading = models.CharField(max_length=20, null=True, blank=True)
     credits = models.FloatField(null=True, blank=True)
     module_prereq = models.ManyToManyField("self", blank=True)
+    exam = models.ManyToManyField(Exam, blank=True)
 
     def __str__(self):
         return f'ID:{self.pk} : {self.code} : {self.name} : {self.desc} : {self.grading} : {self.credits}'

@@ -20,3 +20,9 @@ class CourseAdmin(admin.ModelAdmin):
 class ModuleAdmin(admin.ModelAdmin):
     list_display = ['code', 'name', 'desc', 'grading', 'credits']
     search_fields = ['code', 'name', 'desc', 'grading', 'credits']
+
+
+@admin.register(models.Exam)
+class ExamAdmin(admin.ModelAdmin):
+    list_display = ['date', 'time', 'duration']
+    search_fields = ['date', 'time', 'duration']
