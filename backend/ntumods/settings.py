@@ -132,7 +132,7 @@ DATABASES = {
         'NAME': env('DBNAME', default='ntumods'),
         'USER': env('DBUSERNAME', default='postgres'),
         'PASSWORD': env('DBPASSWORD', default='password'),
-        'HOST': '127.0.0.1',
+        'HOST': env('DBHOST', default='127.0.0.1'),
         'PORT': '5432',
     }
 }
