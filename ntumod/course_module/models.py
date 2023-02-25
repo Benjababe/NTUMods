@@ -18,6 +18,7 @@ class Course(models.Model):
 
 
 class Exam(models.Model):
+    name = models.CharField(max_length=100, null=True, blank=True)
     date = models.DateField()
     time = models.CharField(max_length=10, null=True, blank=True)
     duration = models.CharField(max_length=30, null=True, blank=True)
@@ -25,7 +26,10 @@ class Exam(models.Model):
     year = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
-        return f'ID:{self.pk} : Date {self.date} : Time {self.time} : Duration {self.duration}'
+        return f'ID:{self.pk} : Name {self.name} : Date {self.date} : Time {self.time} : Duration {self.duration}'
+
+    class meta:
+        unique_together = ('name', 'date', 'time', 'duration')
 
 
 # Note that you need to manually delete the old Module entry as PATCH
@@ -37,7 +41,7 @@ class Module(models.Model):
     desc = models.TextField(null=True, blank=True)
     grading = models.CharField(max_length=20, null=True, blank=True)
     credits = models.FloatField(null=True, blank=True)
-    module_prereq = models.ManyToManyField("self", null=True, blank=True)
+    module_prereq = models.ManyToManyField("self", blank=True)
     exam = models.ManyToManyField(Exam, blank=True)
 
     def __str__(self):

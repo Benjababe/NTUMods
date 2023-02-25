@@ -6,8 +6,6 @@ from venue.models import Venue
 
 
 class TimeSlot(models.Model):
-    SEM_CHOICES = (1, 2)
-
     index = models.CharField(max_length=10, null=True, blank=True)
     type = models.CharField(max_length=10, null=True, blank=True)
     group = models.CharField(max_length=10, null=True, blank=True)
