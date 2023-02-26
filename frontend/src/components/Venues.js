@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import venueService from "../services/venues";
 import VenueItem from "./VenueItem";
 import VenueTimetable from "./VenueTimetable";
+import VenueFreeSearch from "./VenueFreeSearch";
 
 const Venues = () => {
     const [venues, setVenues] = useState(null);
@@ -44,6 +45,7 @@ const Venues = () => {
                 <div>
                     <input className="txt-search" type="search" placeholder="Venue Name" onChange={(e) => searchVenue(e.target.value)} />
                 </div>
+                <VenueFreeSearch setVenues={setVenues} />
                 <div className="venue-results">
                     <ul className="venue-list">
                         {venuesList}
