@@ -9,8 +9,6 @@
 Ensure you have a `.env` file in the same directory as `settings.py` with the following properties set
 
 ```
-DEBUG=TRUE
-
 # Secret key for generating an authentication token
 SECRET_KEY=
 
@@ -24,7 +22,38 @@ DBUSERNAME=postgres
 DBPASSWORD=password
 ```
 
+# Starting NTUMods
+
+1. Install python packages
+```
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+2. Build the React app
+
+From root:
+```
+cd frontend
+npm install --legacy-peer-deps
+npm run build
+```
+
+3. Copy the build to django
+```
+cp -r build ../backend/
+```
+
+4. Setup and run django
+```
+cd ../backend
+python manage.py migrate
+python manage.py runserver 0.0.0.0:8000
+```
+
 # To Dos
 
-Scrape professors
-Login & Timetable
+- Scrape professors
+- Login & Timetable
+- Mix venue searches together
