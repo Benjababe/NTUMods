@@ -24,6 +24,8 @@ DBPASSWORD=password
 
 # Starting NTUMods
 
+Starting from root directory
+
 1. Install python packages
 ```
 python -m venv .venv
@@ -32,8 +34,6 @@ pip install -r requirements.txt
 ```
 
 2. Build the React app
-
-From root:
 ```
 cd frontend
 npm install --legacy-peer-deps
