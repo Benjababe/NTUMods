@@ -20,7 +20,7 @@ from django.shortcuts import render
 from users.urls import urlpatterns as users_urlpatterns
 from course_module.views import ModuleSearchViewSet
 from timeslot.views import VenueTimeSlotViewSet
-from venue.views import VenueSearchViewSet, VenueFreeSearchViewSet
+from venue.views import VenueSearchViewSet
 
 admin.site.index_title = 'NTU MODULE ADMIN'
 admin.site.site_url = 'www.google.com'
@@ -35,8 +35,7 @@ urlpatterns = [
     path('', include('course_module.urls')),
     path('', include('venue.urls')),
     re_path('modulesearch/', ModuleSearchViewSet.as_view()),
-    re_path('venuesearch/', VenueSearchViewSet.as_view()),
-    re_path('venuefreesearch/', VenueFreeSearchViewSet.as_view()),
+    re_path('venuesearch/', VenueSearchViewSet.as_view(), name='venue-search'),
     re_path('timeslot/', VenueTimeSlotViewSet.as_view()),
 ]
 

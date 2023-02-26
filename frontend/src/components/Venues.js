@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import venueService from "../services/venues";
 import VenueItem from "./VenueItem";
 import VenueTimetable from "./VenueTimetable";
-import VenueFreeSearch from "./VenueFreeSearch";
+import VenueSearch from "./VenueSearch";
 
 const Venues = () => {
     const [venues, setVenues] = useState(null);
@@ -26,13 +26,6 @@ const Venues = () => {
         setVenues(venues);
     }
 
-    const searchVenue = async (val) => {
-        const venues = (val === "")
-            ? await venueService.getAll()
-            : await venueService.searchVenue(val);
-        setVenues(venues);
-    }
-
     const venuesList = (venues == null)
         ? []
         : venues["results"].map((venue) => {
@@ -42,10 +35,7 @@ const Venues = () => {
     return (
         <div className="venue-block">
             <div className="venue-sel-div">
-                <div>
-                    <input className="txt-search" type="search" placeholder="Venue Name" onChange={(e) => searchVenue(e.target.value)} />
-                </div>
-                <VenueFreeSearch setVenues={setVenues} />
+                <VenueSearch setVenues={setVenues} />
                 <div className="venue-results">
                     <ul className="venue-list">
                         {venuesList}

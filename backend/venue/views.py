@@ -11,7 +11,7 @@ from timeslot.models import TimeSlot
 
 import datetime
 
-earth_radius_m = 6371000
+EARTH_RADIUS_M = 6371000
 
 # Create your views here.
 class StandardResultSetPagination(PageNumberPagination):
@@ -57,61 +57,63 @@ class VenueViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save()
 
-
 class VenueSearchViewSet(generics.ListAPIView):
     serializer_class = VenueSerializer
     pagination_class = StandardResultSetPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
 
     def get_queryset(self):
-        queryset = Venue.objects.all().order_by('name')
-
-        venue_name = self.request.query_params.get('name')
-
-        if venue_name is not None:
-            queryset = queryset.filter(name__icontains=venue_name)
-
-        return queryset
-
-
-class VenueFreeSearchViewSet(generics.ListAPIView):
-    serializer_class = VenueSerializer
-    pagination_class = StandardResultSetPagination
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-
-    def get_queryset(self):
         # Free time slot wanted
-        start_time = datetime.time(int(self.request.query_params.get('start')), 0, 0)
-        end_time = datetime.time(int(self.request.query_params.get('end')), 0, 0)
-        day = str(self.request.query_params.get('day'))
+        
+        day = self.request.query_params.get('day')
+        time_start = self.request.query_params.get('start')
+        time_end = self.request.query_params.get('end')
+        venue_name = str(self.request.query_params.get('name'))
+        
+        # get initial list of venues
+        venue_qs = Venue.objects
+        
+        # if venue name is specified, filter by it
+        if len(venue_name) > 0:
+            venue_qs = venue_qs.filter(name__icontains=venue_name)
+        
+        # if free room filter is enabled, apply them
+        if day == "" or time_start == "" or time_end == "":
+            pass
+        else:
+            day = str(self.request.query_params.get('day'))
+            time_start = datetime.time(int(time_start), 0, 0)
+            time_end = datetime.time(int(time_end), 0, 0)
 
-        # Current location of user
-        long = self.request.query_params.get('long')
-        lat = self.request.query_params.get('lat')
+            # Current location of user
+            long = self.request.query_params.get('long')
+            lat = self.request.query_params.get('lat')
 
-        # Get the entire list of venue that are not available
-        rooms_not_available_list = TimeSlot.objects.filter(
-            Q(time_start__lt=end_time) &
-            Q(time_end__gt=start_time) &
-            Q(day=day)
-        ).values_list('venue', flat=True)
+            # Get the entire list of venue that are not available
+            rooms_not_available_list = TimeSlot.objects.filter(
+                (
+                    (Q(time_start__lt=time_start) & Q(time_end__gt=time_start)) |
+                    (Q(time_start__lt=time_end) & Q(time_end__gt=time_end)) |
+                    (Q(time_start__gt=time_start) & Q(time_end__lt=time_end)) |
+                    (Q(time_start__lt=time_start) & Q(time_end__gt=time_end))
+                ) &
+                Q(day=day)            
+            ).values_list('venue', flat=True)
 
-        # Exclude all the venue that are not available
-        available_rooms_qs = Venue.objects.exclude(id__in=rooms_not_available_list)
+            # Exclude all the venue that are not available
+            venue_qs = venue_qs.exclude(id__in=rooms_not_available_list)
 
-        # Compute the distance for each venue to given long lat and then
-        # order venue by ascending order of distance
-        if long is not None and lat is not None:
-            available_rooms_ordered_qs = available_rooms_qs.annotate(
-                    distance=Cast(
-                        earth_radius_m * Sqrt(
-                            Power(F('lat') - long, 2) +
-                            Power(F('long') - lat, 2)
-                        ),
-                        output_field=FloatField()
-                    )
-                ).order_by('distance')
+            # Compute the distance for each venue to given long lat and then
+            # order venue by ascending order of distance
+            if long is not None and lat is not None:
+                venue_qs = venue_qs.annotate(
+                        distance=Cast(
+                            EARTH_RADIUS_M * Sqrt(
+                                Power(F('lat') - long, 2) +
+                                Power(F('long') - lat, 2)
+                            ),
+                            output_field=FloatField()
+                        )
+                    ).order_by('distance')
 
-            return available_rooms_ordered_qs
-
-        return available_rooms_qs
+        return venue_qs.order_by('name')

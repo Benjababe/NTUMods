@@ -28,7 +28,7 @@ const Modules = () => {
     const modulesList = (modules === null)
         ? []
         : modules["results"].map((module) => {
-            return <ModuleItem key={module.id} module={module} />;
+            return <ModuleItem key={module.code} module={module} />;
         })
 
     return (
