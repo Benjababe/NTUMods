@@ -18,7 +18,7 @@ class StandardResultSetPagination(PageNumberPagination):
     def get_next_link(self):
         if not self.page.has_next():
             return None
-
+        
         url = self.request.build_absolute_uri()
         scheme = self.request.is_secure() and "https" or "http"
         fwd_scheme = self.request.META.get("HTTP_X_FORWARDED_PROTO")
@@ -31,7 +31,7 @@ class StandardResultSetPagination(PageNumberPagination):
     def get_previous_link(self):
         if not self.page.has_previous():
             return None
-
+        
         url = self.request.build_absolute_uri()
         scheme = self.request.is_secure() and "https" or "http"
         fwd_scheme = self.request.META.get("HTTP_X_FORWARDED_PROTO")

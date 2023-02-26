@@ -20,16 +20,14 @@ from django.shortcuts import render
 from users.urls import urlpatterns as users_urlpatterns
 from course_module.views import ModuleSearchViewSet
 from timeslot.views import VenueTimeSlotViewSet
-from venue.views import VenueSearchViewSet
+from venue.views import VenueSearchViewSet, VenueFreeSearchViewSet
 
 admin.site.index_title = 'NTU MODULE ADMIN'
 admin.site.site_url = 'www.google.com'
 admin.site.site_header = 'NTUMODS'
 
-
 def render_react(request):
     return render(request, "index.html")
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -38,6 +36,7 @@ urlpatterns = [
     path('', include('venue.urls')),
     re_path('modulesearch/', ModuleSearchViewSet.as_view()),
     re_path('venuesearch/', VenueSearchViewSet.as_view()),
+    re_path('venuefreesearch/', VenueFreeSearchViewSet.as_view()),
     re_path('timeslot/', VenueTimeSlotViewSet.as_view()),
 ]
 
