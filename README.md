@@ -3,6 +3,7 @@
 - [Course Information Selection](https://wis.ntu.edu.sg/webexe/owa/aus_subj_cont.main)
 - [Course Schedule Information](https://wish.wis.ntu.edu.sg/webexe/owa/aus_schedule.main)
 - [Exam Timetable](https://wis.ntu.edu.sg/webexe/owa/exam_timetable_und.main)
+- [NTU Staff](https://www.ntu.edu.sg/research/faculty-directory)
 
 # Pre-requisites
 
