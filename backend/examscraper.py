@@ -101,10 +101,7 @@ def process_exams(html: str):
     return exams
 
 
-def scrape():
-    semester = get_latest_sem()
-    exams = get_exams(semester)
-
+def insert_exams(semester: Semester, exams: dict):
     for module_code, details in exams.items():
         # search for related module
         try:
@@ -133,6 +130,11 @@ def scrape():
             exam_instance.save()
             module_obj.exam.add(exam_instance)
             module_obj.save()
+
+def scrape():
+    semester = get_latest_sem()
+    exams = get_exams(semester)
+    insert_exams(semester, exams)
 
 
 if __name__ == "__main__":

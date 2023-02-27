@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'course_module',
     'timeslot',
     'venue',
+    'staff'
 ]
 
 CORS_ALLOW_CREDENTIALS = True

@@ -54,6 +54,7 @@ python manage.py runserver 0.0.0.0:8000
 
 # To Dos
 
-- Scrape professors
+- Display Staff
+- Display Exams
 - Login & Timetable
-- Mix venue searches together
+- Get latlng of venues
