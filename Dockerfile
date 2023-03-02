@@ -1,36 +1,28 @@
 # Base image
-FROM python:3.11-bullseye
+FROM python:3.11-alpine3.17
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-# Install Node.js
-RUN apt-get update && apt-get install -y nodejs npm
-
-# Set up the working directory for Django app
-WORKDIR /backend
-
-# Copy the requirements file
-COPY backend/requirements.txt .
-RUN pip install -r requirements.txt
-
-# Copy the entire Django project folder to the container
+# Copies over project files
+RUN mkdir /ntumods
+WORKDIR /ntumods
 COPY . .
 
-# Set up the working directory for React app
-WORKDIR /frontend
-COPY frontend/package*.json ./
+# Setup django
+WORKDIR /ntumods/backend
+RUN pip install -r requirements.txt
+
+# Build React app and copies static files to django
+WORKDIR /ntumods/frontend
+RUN apk add --update nodejs npm
 RUN npm install --legacy-peer-deps
-
-# Build the React app
-RUN cd frontend && npm run build && cd ..
-
-# Copy the build content to the Django app
-RUN cp -r /frontend/build/ /backend/
+RUN npm run build
+RUN cp -r build ../backend/
 
 # Expose the Django app port
 EXPOSE 8000
 
 # Start the Django app
+WORKDIR /ntumods/backend
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
